@@ -1,23 +1,5 @@
 local M = {}
 
-
-function M.tail(t)
-  return setmetatable({}, {
-    __index = function(_, k) return t[k + 1] end,
-    __newindex = function(_, k, v) t[k + 1] = v end,
-    __len = function(_) return #t - 1 end,
-    __ipairs = function(_)
-      return
-          function(_, i)
-            if i + 1 == #t then return nil end
-            return i + 1, t[i + 2]
-          end,
-          t, 0
-    end,
-    __pairs = function(t) return ipairs(t) end,
-  })
-end
-
 function M.split(string, char)
   local pattern = '([^' .. char .. ']+)'
   local split_list = {}
@@ -60,6 +42,7 @@ end
 
 -- WARNING: this function can not handle duplicate names currently.
 -- using base path currently until issue is solved.
+
 function M.get_files_by_end(string, telescope) --> table
   telescope = telescope or "true"
   local find = vim.fs.find(function(x) return vim.endswith(x, string) end,
