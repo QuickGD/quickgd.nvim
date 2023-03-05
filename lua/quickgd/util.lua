@@ -1,5 +1,20 @@
 local M = {}
 
+function M.time(name, callback)
+  local before = os.clock()
+  local call = callback()
+  local after = os.clock()
+  local message = string.format("%s took %0.6f seconds to run", name, after - before)
+  local has_notify, notify = pcall(require, "notify")
+
+  if has_notify then
+    notify({ message })
+  else
+    print(message)
+  end
+  return call or true
+end
+
 function M.split(string, char)
   local pattern = '([^' .. char .. ']+)'
   local split_list = {}
@@ -19,29 +34,18 @@ function M.name_from_function(string)
   return name
 end
 
-function M.path_from_base(string)
-  local path_list = M.split(string, "/")
-  local base_dir = M.getcwd()
-  local path = ""
-
-  local found_base = false
-  for _, value in ipairs(path_list) do
-    if value == base_dir then
-      found_base = true
-    end
-    if found_base then
-      path = path .. value .. "/"
-    end
-  end
-  return path
+function M.truncate_path(string)
+  local base_dir = M.cwdname()
+  local pattern = string.format("(%s.*)", base_dir)
+  return string.match(string, pattern)
 end
 
-function M.getcwd()
+function M.cwdname()
   return vim.fs.basename(vim.fn.getcwd())
 end
 
 -- WARNING: this function can not handle duplicate names currently.
--- using base path currently until issue is solved.
+-- using base path until issue is solved.
 
 function M.get_files_by_end(string, telescope) --> table
   telescope = telescope or "true"
@@ -53,15 +57,13 @@ function M.get_files_by_end(string, telescope) --> table
     if telescope == "true" then
       for _, value in ipairs(find) do
         local path = vim.fs.normalize(value)
-        local name = icon .. " " .. M.path_from_base(path)
+        local name = icon .. " " .. M.truncate_path(path)
         table.insert(files, { name, path })
       end
     else
-      files.name = {}
-      files.path = {}
       for _, value in ipairs(find) do
         local path = vim.fs.normalize(value)
-        local name = icon .. " " .. M.path_from_base(path)
+        local name = icon .. " " .. M.truncate_path(path)
         table.insert(files.name, name)
         table.insert(files.path, path)
       end
