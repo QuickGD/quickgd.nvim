@@ -2,6 +2,7 @@ local M = {}
 
 M.default = {
   godot_path = vim.fs.normalize(os.getenv("GODOT") or ""),
+  project_path = vim.fs.normalize(vim.fn.getcwd()) .. "/project.godot",
   last_scene = "",
   telescope = true,
 }
