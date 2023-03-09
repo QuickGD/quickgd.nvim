@@ -1,7 +1,7 @@
 local M = {}
 
 M.default = {
-  godot_location = vim.fs.normalize(os.getenv("GODOT") or ""),
+  godot_path = vim.fs.normalize(os.getenv("GODOT") or ""),
   last_scene = "",
   telescope = true,
 }

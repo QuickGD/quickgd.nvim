@@ -32,7 +32,7 @@ function M.godot_run()
     }, function(_, index)
       if index ~= nil then
         config.last_scene = list.path[index]
-        local command = string.format("silent! !%s %s", config.godot_location, list.path[index])
+        local command = string.format("silent! !%s %s", config.godot_path, list.path[index])
         vim.api.nvim_command(command)
       end
     end)
@@ -40,7 +40,7 @@ function M.godot_run()
 end
 
 function M.godot_run_last()
-  local command = string.format("silent! !%s %s", config.godot_location, config.last_scene)
+  local command = string.format("silent! !%s %s", config.godot_path, config.last_scene)
   vim.api.nvim_command(command)
 end
 
