@@ -15,6 +15,9 @@ local function run_scene(prompt_bufnr)
     vim.api.nvim_command(command)
   end)
   return true
+function M.godot_start()
+  local command = string.format("silent! !%s %s", config.godot_path, config.project_path)
+  vim.api.nvim_command(command)
 end
 
 function M.godot_run()
