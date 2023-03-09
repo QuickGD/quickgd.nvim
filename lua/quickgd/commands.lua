@@ -55,14 +55,4 @@ function M.godot_run_last()
   vim.api.nvim_command(command)
 end
 
-function M.godot_headless_start()
-  local project = vim.fn.getcwd()
-  local job = vim.fn.jobstart("ping", { opts = "neovim.io" })
-  require("notify") { tostring(job) }
-end
-
-function M.godot_headless_stop()
-  -- local project = vim.fn.getcwd()
-end
-
 return M
