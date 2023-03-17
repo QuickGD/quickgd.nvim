@@ -1,5 +1,5 @@
 # quickgd.nvim
-A native neovim plugin for launching your Godot project or tscn.
+Tools for neovim that comes with helpfull godot / tscn launch commands, setup for treesitter and auto-completion for gdshader.
 
 https://user-images.githubusercontent.com/6450181/224002487-bc639c89-3bbe-4937-9d88-9e08daaffc1e.mp4
 
