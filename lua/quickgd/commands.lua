@@ -1,23 +1,18 @@
 local M = {}
 
-local util = require("quickgd.util")
-local config = require("quickgd.config")
-local telescope = require("quickgd.telescope")
+local fs = require("quickgd.lib.fs")
+local config = require("quickgd.lib.config")
+local telescope = require("quickgd.lib.telescope")
 local actions = telescope.actions
 local actions_state = telescope.actions_state
 
-local function run_scene(prompt_bufnr)
-  actions.select_default:replace(function()
-    actions.close(prompt_bufnr)
-    local selected = actions_state.get_selected_entry()
-    config.last_scene = selected.path
-    local command = string.format("silent! !%s %s", config.godot_location, selected.path)
-    vim.api.nvim_command(command)
-  end)
-  return true
 function M.godot_start()
   local command = string.format("silent! !%s %s", config.godot_path, config.project_path)
   vim.api.nvim_command(command)
+end
+
+function M.cmp()
+  require("quickgd.cmp")
 end
 
 function M.godot_run()
@@ -36,11 +31,11 @@ function M.godot_run()
     telescope.run_func_on_selected({
       name = "TSCN",
       attach_mappings = run_scene,
-      results = util.get_files_by_end,
+      results = fs.get_files_by_end,
       results_args = ".tscn",
     })
   else
-    local list = util.get_files_by_end(".tscn", "false")
+    local list = fs.get_files_by_end(".tscn", "false")
     vim.ui.select(list.name or {}, {
       prompt = 'TSCN',
     }, function(_, index)

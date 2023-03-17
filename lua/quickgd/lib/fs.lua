@@ -1,37 +1,7 @@
 local M = {}
 
-function M.time(name, callback)
-  local before = os.clock()
-  local call = callback()
-  local after = os.clock()
-  local message = string.format("%s took %0.6f seconds to run", name, after - before)
-  local has_notify, notify = pcall(require, "notify")
-
-  if has_notify then
-    notify({ message })
-  else
-    print(message)
-  end
-  return call or true
-end
-
-function M.split(string, char)
-  local pattern = string.format('([^%s]+)', char)
-  local split_list = {}
-  for word in string.gmatch(string, pattern) do
-    table.insert(split_list, word)
-  end
-  return split_list
-end
-
-function M.name_from_function(string)
-  local name_split = M.split(string, '_')
-  local name = ""
-  for _, value in ipairs(name_split) do
-    local upper = (value:gsub("^%l", string.upper))
-    name = name .. upper
-  end
-  return name
+function M.cwdname()
+  return vim.fs.basename(vim.fn.getcwd())
 end
 
 function M.truncate_path(string)
@@ -50,10 +20,6 @@ function M.truncate_path_amount(string, amount)
   end
   local final_pattern = string.format("(%s[^/]*)$", pattern)
   return string.match(string, final_pattern)
-end
-
-function M.cwdname()
-  return vim.fs.basename(vim.fn.getcwd())
 end
 
 function M.get_files_by_end(string, telescope) --> table
