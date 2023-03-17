@@ -56,6 +56,19 @@ https://user-images.githubusercontent.com/6450181/224002487-bc639c89-3bbe-4937-9
 }
 ```
 
+### 📝 CMP
+
+```lua
+    sources = {
+      { name = "nvim_lsp", priority = 1000 },
+      { name = "quickgd", priority = 750 }, -- make sure to add quickgd to your source list
+      { name = "luasnip", priority = 700 },
+      { name = "path", priority = 650 },
+      { name = "buffer", priority = 400 },
+    },
+```
+
+
 ---
 
 ## ⚙  Settings
