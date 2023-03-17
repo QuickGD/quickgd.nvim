@@ -9,8 +9,8 @@ https://user-images.githubusercontent.com/6450181/224002487-bc639c89-3bbe-4937-9
 - Quick launch commands.
 
 ## ⛑  Requirements
-- [nvim-telescope](https://github.com/nvim-telescope/telescope.nvim) (needed to use telescope else disable in settings.)
-- [nvim-treesitter](https://github.com/nvim-treesitter/nvim-treesitter) (needed for auto completion)
+- [nvim-telescope](https://github.com/nvim-telescope/telescope.nvim) needed to use telescope else disable in settings.
+- [nvim-treesitter](https://github.com/nvim-treesitter/nvim-treesitter) needed for auto completion make sure you have GLTF parser installed.
 - nvim >= 0.8
 
 ---
