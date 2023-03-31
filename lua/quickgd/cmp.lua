@@ -1,3 +1,4 @@
+local ts = require("quickgd.lib.treesitter")
 local source = {}
 
 local has_cmp, cmp = pcall(require, "cmp")
@@ -22,7 +23,7 @@ function source:get_debug_name()
 end
 
 function source:get_trigger_characters(params)
-	return { " ", "<tab>" }
+	return { " ", "\t" }
 end
 
 local function is_same_type(parent, child)
@@ -48,6 +49,9 @@ local comp = {
 	fog = require("quickgd.completion.fog"),
 }
 
+local parsed_buffer = ts.parse:buffer(0, "glsl")
+local root
+
 function source:complete(params, callback)
 	local cur = params.context.cursor.col
 	local row = params.context.cursor.row
@@ -56,9 +60,8 @@ function source:complete(params, callback)
 	local line_before_cursor = string.sub(line_clean, 1, cur - 1)
 	local line_split = require("quickgd.lib.str").split(line_before_cursor, " ")
 	local line_split_tail = line_split[#line_split]
-	local cur_node = vim.treesitter.get_node({ bufnr = 0 })
 
-	local function get_key()
+	local key = (function()
 		if line_split[1] == "render_mode" or line_split[1] == "shader_type" then
 			return line_split[1]
 		elseif #line_clean <= 2 then
@@ -68,80 +71,9 @@ function source:complete(params, callback)
 		else
 			return line_split_tail
 		end
-		return ";"
-	end
-	local key = get_key()
+	end)()
 
-	local ts = require("quickgd.lib.treesitter")
-	local root = ts.get_root(0)
-	local func = {}
-
-	local query = vim.treesitter.parse_query(
-		"glsl",
-		[[
-    (function_definition
-      (function_declarator
-        declarator: (identifier) @vertex_name (#eq? @vertex_name "vertex"))) @vertex
-
-    (function_definition
-      (function_declarator
-        declarator: (identifier) @fragment_name (#eq? @fragment_name "fragment"))) @fragment
-
-    (function_definition
-      (function_declarator
-        declarator: (identifier) @light_name (#eq? @light_name "light"))) @light
-
-    (function_definition
-      (function_declarator
-        declarator: (identifier) @start_name (#eq? @start_name "start"))) @start
-
-    (function_definition
-      (function_declarator
-        declarator: (identifier) @process_name (#eq? @process_name "process"))) @process
-
-    (function_definition
-      (function_declarator
-        declarator: (identifier) @sky_name (#eq? @sky_name "sky"))) @sky
-        
-    (function_definition
-      (function_declarator
-        declarator: (identifier) @fog_name (#eq? @fog_name "fog"))) @fog
-
-    (declaration
-      type: (type_identifier)@type (#eq? @type "shader_type")
-      declarator: (identifier)@shader_type)
-    ]]
-	)
-
-	for id, node in query:iter_captures(root, 0, 0, -1) do
-		local name = query.captures[id]
-
-		if name == "shader_type" then
-			local text = vim.treesitter.get_node_text(node, 0, {})
-			func.shader_type = text
-		end
-		if name == "vertex" then
-			func.vertex = node
-		end
-		if name == "fragment" then
-			func.fragment = node
-		end
-		if name == "light" then
-			func.light = node
-		end
-		if name == "start" then
-			func.start = node
-		end
-		if name == "process" then
-			func.process = node
-		end
-		if name == "sky" then
-			func.sky = node
-		end
-		if name == "fog" then
-			func.fog = node
-		end
-	end
+	root = parsed_buffer:root()
 
 	local function set_universal(list)
 		if key == "shader_type" then
@@ -165,31 +97,34 @@ function source:complete(params, callback)
 	end
 
 	local function set_spatial(list)
+		local vertex = ts.get_node(root, ts.query.vertex, "function")
+		local fragment = ts.get_node(root, ts.query.fragment, "function")
+		local light = ts.get_node(root, ts.query.light, "function")
 		if key == "render_mode" then
 			list = comp.spatial.render_mode
 			goto done
 		end
 		-- in --
 		if string.match(line_before_cursor, "=") then
-			if func.vertex and row > func.vertex:start() + 1 and row < func.vertex:end_() + 1 then
+			if vertex and row > vertex:start() + 1 and row < vertex:end_() + 1 then
 				list = vim.list_extend(list, comp.spatial.vertex_in)
 				list = vim.list_extend(list, comp.spatial.vertex_inout)
-			elseif func.fragment and row > func.fragment:start() + 1 and row < func.fragment:end_() + 1 then
+			elseif fragment and row > fragment:start() + 1 and row < fragment:end_() + 1 then
 				list = vim.list_extend(list, comp.spatial.fragment_in)
 				list = vim.list_extend(list, comp.spatial.fragment_inout)
-			elseif func.light and row > func.light:start() + 1 and row < func.light:end_() + 1 then
+			elseif light and row > light:start() + 1 and row < light:end_() + 1 then
 				list = vim.list_extend(list, comp.spatial.light_in)
 			end
 			goto done
 		end
 		-- out --
-		if func.vertex and row > func.vertex:start() + 1 and row < func.vertex:end_() + 1 then
+		if vertex and row > vertex:start() + 1 and row < vertex:end_() + 1 then
 			list = vim.list_extend(list, comp.spatial.vertex_out)
 			list = vim.list_extend(list, comp.spatial.vertex_inout)
-		elseif func.fragment and row > func.fragment:start() + 1 and row < func.fragment:end_() + 1 then
-			list = vim.list_extend(list, comp.spatial.fragment_in)
+		elseif fragment and row > fragment:start() + 1 and row < fragment:end_() + 1 then
+			list = vim.list_extend(list, comp.spatial.fragment_out)
 			list = vim.list_extend(list, comp.spatial.fragment_inout)
-		elseif func.light and row > func.light:start() + 1 and row < func.light:end_() + 1 then
+		elseif light and row > light:start() + 1 and row < light:end_() + 1 then
 			list = vim.list_extend(list, comp.spatial.light_out)
 		end
 		::done::
@@ -197,32 +132,35 @@ function source:complete(params, callback)
 	end
 
 	local function set_canvas_item(list)
+		local vertex = ts.get_node(root, ts.query.vertex, "function")
+		local fragment = ts.get_node(root, ts.query.fragment, "function")
+		local light = ts.get_node(root, ts.query.light, "function")
 		if key == "render_mode" then
-			list = comp.spatial.render_mode
+			list = comp.canvas.render_mode
 			goto done
 		end
 		-- in --
 		if string.match(line_before_cursor, "=") then
-			if func.vertex and row > func.vertex:start() + 1 and row < func.vertex:end_() + 1 then
+			if vertex and row > vertex:start() + 1 and row < vertex:end_() + 1 then
 				list = vim.list_extend(list, comp.canvas_item.vertex_in)
 				list = vim.list_extend(list, comp.canvas_item.vertex_inout)
-			elseif func.fragment and row > func.fragment:start() + 1 and row < func.fragment:end_() + 1 then
+			elseif fragment and row > fragment:start() + 1 and row < fragment:end_() + 1 then
 				list = vim.list_extend(list, comp.canvas_item.fragment_in)
 				list = vim.list_extend(list, comp.canvas_item.fragment_inout)
-			elseif func.light and row > func.light:start() + 1 and row < func.light:end_() + 1 then
+			elseif light and row > light:start() + 1 and row < light:end_() + 1 then
 				list = vim.list_extend(list, comp.canvas_item.light_in)
 				list = vim.list_extend(list, comp.canvas_item.light_inout)
 			end
 			goto done
 		end
 		-- out --
-		if func.vertex and row > func.vertex:start() + 1 and row < func.vertex:end_() + 1 then
+		if vertex and row > vertex:start() + 1 and row < vertex:end_() + 1 then
 			list = vim.list_extend(list, comp.canvas_item.vertex_out)
 			list = vim.list_extend(list, comp.canvas_item.vertex_inout)
-		elseif func.fragment and row > func.fragment:start() + 1 and row < func.fragment:end_() + 1 then
+		elseif fragment and row > fragment:start() + 1 and row < fragment:end_() + 1 then
 			list = vim.list_extend(list, comp.canvas_item.fragment_out)
 			list = vim.list_extend(list, comp.canvas_item.fragment_inout)
-		elseif func.light and row > func.light:start() + 1 and row < func.light:end_() + 1 then
+		elseif light and row > light:start() + 1 and row < light:end_() + 1 then
 			list = vim.list_extend(list, comp.canvas_item.light_out)
 			list = vim.list_extend(list, comp.canvas_item.light_inout)
 		end
@@ -231,26 +169,28 @@ function source:complete(params, callback)
 	end
 
 	local function set_particles(list)
+		local start = ts.get_node(root, ts.query.start, "function")
+		local process = ts.get_node(root, ts.query.process, "function")
 		if key == "render_mode" then
 			list = comp.particles.render_mode
 			goto done
 		end
 		-- in --
 		if string.match(line_before_cursor, "=") then
-			if func.start and row > func.start:start() + 1 and row < func.start:end_() + 1 then
+			if start and row > start:start() + 1 and row < start:end_() + 1 then
 				list = vim.list_extend(list, comp.particles.start_in)
 				list = vim.list_extend(list, comp.particles.global_in)
 				list = vim.list_extend(list, comp.particles.global_inout)
-			elseif func.process and row > func.process:start() + 1 and row < func.process:end_() + 1 then
+			elseif process and row > process:start() + 1 and row < process:end_() + 1 then
 				list = vim.list_extend(list, comp.particles.process_in)
 				list = vim.list_extend(list, comp.particles.global_inout)
 			end
 			goto done
 		end
 		-- out --
-		if func.start and row > func.start:start() + 1 and row < func.start:end_() + 1 then
+		if start and row > start:start() + 1 and row < start:end_() + 1 then
 			list = vim.list_extend(list, comp.particles.global_inout)
-		elseif func.process and row > func.process:start() + 1 and row < func.process:end_() + 1 then
+		elseif process and row > process:start() + 1 and row < process:end_() + 1 then
 			list = vim.list_extend(list, comp.particles.global_inout)
 		end
 		::done::
@@ -258,6 +198,8 @@ function source:complete(params, callback)
 	end
 
 	local function set_sky(list)
+		local sky = ts.get_node(root, ts.query.sky, "function")
+		local start = ts.get_node(root, ts.query.start, "function")
 		if key == "render_mode" then
 			list = comp.sky.render_mode
 			goto done
@@ -265,14 +207,13 @@ function source:complete(params, callback)
 		list = vim.list_extend(list, comp.sky.global)
 		-- in --
 		if string.match(line_before_cursor, "=") then
-			require("notify")({ "in" })
-			if func.start and row > func.start:start() + 1 and row < func.start:end_() + 1 then
+			if start and row > start:start() + 1 and row < start:end_() + 1 then
 				list = vim.list_extend(list, comp.sky.sky_in)
 			end
 			goto done
 		end
 		-- out --
-		if func.sky and row > func.sky:start() + 1 and row < func.sky:end_() + 1 then
+		if sky and row > sky:start() + 1 and row < sky:end_() + 1 then
 			require("notify")({ "out" })
 			list = vim.list_extend(list, comp.sky.sky_out)
 		end
@@ -281,15 +222,16 @@ function source:complete(params, callback)
 	end
 
 	local function set_fog(list)
+		local fog = ts.get_node(root, ts.query.fog, "function")
 		-- in --
 		if string.match(line_before_cursor, "=") then
-			if func.fog and row > func.fog:start() + 1 and row < func.fog:end_() + 1 then
+			if fog and row > fog:start() + 1 and row < fog:end_() + 1 then
 				list = vim.list_extend(list, comp.fog.fog_in)
 			end
 			goto done
 		end
 		-- out --
-		if func.fog and row > func.fog:start() + 1 and row < func.fog:end_() + 1 then
+		if fog and row > fog:start() + 1 and row < fog:end_() + 1 then
 			list = vim.list_extend(list, comp.fog.fog_out)
 		end
 		::done::
@@ -297,24 +239,28 @@ function source:complete(params, callback)
 	end
 
 	local function get_list()
+		local shader_type = ts.get_text(root, ts.query.shader_type, "shader_type")
+
 		local items = nil
 		items = {}
 		items = set_universal(items)
-		if func.shader_type == "spatial" then
+		if shader_type == "spatial" then
 			items = set_spatial(items)
-		elseif func.shader_type == "canvas_item" then
+		elseif shader_type == "canvas_item" then
 			items = set_canvas_item(items)
-		elseif func.shader_type == "particles" then
+		elseif shader_type == "particles" then
 			items = set_particles(items)
-		elseif func.shader_type == "sky" then
+		elseif shader_type == "sky" then
 			items = set_sky(items)
-		elseif func.shader_type == "fog" then
+		elseif shader_type == "fog" then
 			items = set_fog(items)
 		end
 		return items
 	end
 
 	callback(get_list())
+
+	ts.parse:reload()
 end
 
 -- function source:resolve(completion_item, callback)
