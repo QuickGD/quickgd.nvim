@@ -12,7 +12,8 @@ source.new = function()
 end
 
 function source:is_available()
-	if vim.o.filetype == "gdshader" then
+	local filetype = vim.o.filetype
+	if filetype == "gdshader" or filetype == "gdshaderinc" then
 		return true
 	end
 	return false
