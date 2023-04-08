@@ -28,15 +28,18 @@ https://user-images.githubusercontent.com/6450181/224002487-bc639c89-3bbe-4937-9
 ```lua
 {
   "QuickGD/quickgd.nvim",
+  ft = {"gdshader", "gdshaderinc"}
   cmd = {"GodotRun","GodotRunLast","GodotStart"},
   -- Use opts if passing in settings else use config
-  opts = {},
-  config = function()
-  local quickgd = require "quickgd"
-    quickgd.setup() -- don't need if using opts
-    quickgd.treesitter() -- optional: needed for cmp
-    quickgd.cmp() -- optional
+  init = function()
+    vim.filetype.add {
+      extension = {
+        gdshaderinc = "gdshaderinc",
+      },
+    }
   end,
+  config = true
+  opts = {} -- remove config and use this if changing settings.
 }
 ```
 
@@ -45,13 +48,14 @@ https://user-images.githubusercontent.com/6450181/224002487-bc639c89-3bbe-4937-9
 {
   "QuickGD/quickgd.nvim",
   config = function()
-  local quickgd = require "quickgd"
-    quickgd.setup() {
-      -- options
+    vim.filetype.add {
+      extension = {
+        gdshaderinc = "gdshaderinc",
+      },
+    }
+    require("quickgd").setup() {
+      -- settings
     } 
-    quickgd.treesitter() -- optional: needed for cmp
-    quickgd.cmp() -- optional
-  end,
   end,
 }
 ```
@@ -81,6 +85,10 @@ https://user-images.githubusercontent.com/6450181/224002487-bc639c89-3bbe-4937-9
     project_path = "path/to"
     -- If set to false will use internal selector.
     telescope = true
+    -- Enables GLSL treesitter for gdshader / gdshaderinc. 
+    treesitter = true, -- optional: needed for cmp
+    -- Disable if you don't want the autocompletion.
+    cmp = true, -- optional
   }
 
 ```
