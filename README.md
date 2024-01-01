@@ -28,7 +28,7 @@ https://user-images.githubusercontent.com/6450181/224002487-bc639c89-3bbe-4937-9
 ```lua
 {
   "QuickGD/quickgd.nvim",
-  ft = {"gdshader", "gdshaderinc"}
+  ft = {"gdshader", "gdshaderinc"},
   cmd = {"GodotRun","GodotRunLast","GodotStart"},
   -- Use opts if passing in settings else use config
   init = function()
@@ -38,7 +38,7 @@ https://user-images.githubusercontent.com/6450181/224002487-bc639c89-3bbe-4937-9
       },
     }
   end,
-  config = true
+  config = true,
   opts = {} -- remove config and use this if changing settings.
 }
 ```
