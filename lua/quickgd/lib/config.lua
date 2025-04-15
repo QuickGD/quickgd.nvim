@@ -15,7 +15,17 @@ function M.set_user_config(opts)
 	if opts.default then
 		error("User values are not stored in 'default'")
 	end
+
 	opts = vim.tbl_deep_extend("force", M.default, opts)
+
+	if opts.telescope then
+		local ok = pcall(require, "telescope")
+		if not ok then
+			opts.telescope = false
+			vim.notify("[quickgd] Telescope not found. Falling back to vim.ui.select.", vim.log.levels.WARN)
+		end
+	end
+
 	for key, value in pairs(opts) do
 		M[key] = value
 	end
