@@ -13,6 +13,15 @@ return {
 		{ label = "INDEX", kind = lspkind.Constant },
 		{ label = "EMISSION_TRANSFORM", kind = lspkind.Constant },
 		{ label = "RANDOM_SEED", kind = lspkind.Constant },
+		{ label = "USERDATAX", kind = lspkind.Constant },
+		{ label = "FLAG_EMIT_POSITION", kind = lspkind.Constant },
+		{ label = "FLAG_EMIT_ROT_SCALE", kind = lspkind.Constant },
+		{ label = "FLAG_EMIT_VELOCITY", kind = lspkind.Constant },
+		{ label = "FLAG_EMIT_COLOR", kind = lspkind.Constant },
+		{ label = "FLAG_EMIT_CUSTOM", kind = lspkind.Constant },
+		{ label = "EMITTER_VELOCITY", kind = lspkind.Constant },
+		{ label = "INTERPOLATE_TO_END", kind = lspkind.Constant },
+		{ label = "AMOUNT_RATIO", kind = lspkind.Constant },
 	},
 	global_inout = {
 		{ label = "ACTIVE", kind = lspkind.Property },
@@ -33,11 +42,6 @@ return {
 	process_in = {
 
 		{ label = "RESTART", kind = lspkind.Constant },
-		{ label = "FLAG_EMIT_POSITION", kind = lspkind.Constant },
-		{ label = "FLAG_EMIT_ROT_SCALE", kind = lspkind.Constant },
-		{ label = "FLAG_EMIT_VELOCITY", kind = lspkind.Constant },
-		{ label = "FLAG_EMIT_COLOR", kind = lspkind.Constant },
-		{ label = "FLAG_EMIT_CUSTOM", kind = lspkind.Constant },
 		{ label = "COLLIDED", kind = lspkind.Constant },
 		{ label = "COLLISION_NORMAL", kind = lspkind.Constant },
 		{ label = "COLLISION_DEPTH", kind = lspkind.Constant },

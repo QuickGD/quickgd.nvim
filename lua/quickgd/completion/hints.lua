@@ -2,6 +2,7 @@ local lspkind = vim.lsp.protocol.CompletionItemKind
 
 return {
 	{ label = "source_color", kind = lspkind.Event },
+	{ label = "hint_enum", kind = lspkind.Event },
 	{ label = "hint_range(0,1,0.1)", kind = lspkind.Event },
 	{ label = "hint_normal", kind = lspkind.Event },
 	{ label = "hint_default_white", kind = lspkind.Event },

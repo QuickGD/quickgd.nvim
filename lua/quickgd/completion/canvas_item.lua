@@ -11,14 +11,19 @@ return {
 		{ label = "unshaded", kind = lspkind.Module },
 		{ label = "light_only", kind = lspkind.Module },
 		{ label = "skip_vertex_transform", kind = lspkind.Module },
+		{ label = "world_vertex_coords", kind = lspkind.Module },
 	},
 	vertex_in = {
 		{ label = "MODEL_MATRIX", kind = lspkind.Constant },
 		{ label = "CANVAS_MATRIX", kind = lspkind.Constant },
 		{ label = "SCREEN_MATRIX", kind = lspkind.Constant },
+		{ label = "INSTANCE_ID", kind = lspkind.Constant },
 		{ label = "INSTANCE_CUSTOM", kind = lspkind.Constant },
 		{ label = "AT_LIGHT_PASS", kind = lspkind.Constant },
 		{ label = "TEXTURE_PIXEL_SIZE", kind = lspkind.Constant },
+		{ label = "VERTEX_ID", kind = lspkind.Constant },
+		{ label = "CUSTOM0", kind = lspkind.Constant },
+		{ label = "CUSTOM1", kind = lspkind.Constant },
 	},
 	vertex_inout = {
 		{ label = "VERTEX", kind = lspkind.Property },
@@ -37,6 +42,7 @@ return {
 		{ label = "SPECULAR_SHININESS", kind = lspkind.Constant },
 		{ label = "UV", kind = lspkind.Constant },
 		{ label = "SCREEN_UV", kind = lspkind.Constant },
+		{ label = "SCREEN_TEXTURE", kind = lspkind.Constant },
 	},
 	fragment_inout = {
 		{ label = "NORMAL", kind = lspkind.Property },

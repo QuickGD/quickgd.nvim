@@ -5,7 +5,8 @@ return {
 		{ label = "WORLD_POSITION", kind = lspkind.Constant },
 		{ label = "OBJECT_POSITION", kind = lspkind.Constant },
 		{ label = "UVW", kind = lspkind.Constant },
-		{ label = "EXTENTS", kind = lspkind.Constant },
+		{ label = "SIZE", kind = lspkind.Constant },
+		{ label = "EXTENTS", kind = lspkind.Constant }, -- WARN: removed.
 		{ label = "SDF", kind = lspkind.Constant },
 	},
 	fog_out = {

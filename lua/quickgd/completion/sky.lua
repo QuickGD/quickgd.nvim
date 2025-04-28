@@ -17,13 +17,13 @@ return {
 		{ label = "LIGHTX_DIRECTION", kind = lspkind.Constant },
 		{ label = "LIGHTX_COLOR", kind = lspkind.Constant },
 		{ label = "LIGHTX_SIZE", kind = lspkind.Constant },
-		{ label = "LIGHTX_SIZE", kind = lspkind.Constant },
 	},
 	sky_in = {
 		{ label = "EYEDIR", kind = lspkind.Constant },
 		{ label = "SCREEN_UV", kind = lspkind.Constant },
 		{ label = "SKY_COORDS", kind = lspkind.Constant },
 		{ label = "HALF_RES_COLOR", kind = lspkind.Constant },
+		{ label = "QUARTER_RES_COLOR", kind = lspkind.Constant },
 	},
 	sky_out = {
 		{ label = "COLOR", kind = lspkind.Propery },
