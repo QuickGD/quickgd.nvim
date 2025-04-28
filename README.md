@@ -72,6 +72,22 @@ https://user-images.githubusercontent.com/6450181/224002487-bc639c89-3bbe-4937-9
     },
 ```
 
+### 📝 BLINK
+
+```lua
+{
+  "saghen/blink.cmp",
+  opts = {
+    sources = { "lsp", "quickgd", "path", "snippets", "buffer"},
+    providers = {
+      quickgd = {
+        name = "quickgd",
+        module = "quickgd.blink"
+      }
+    }
+  }
+}
+```
 
 ---
 
